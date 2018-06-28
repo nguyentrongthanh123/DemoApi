@@ -13,19 +13,22 @@ use Illuminate\Http\Request;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
 Route::post('postLogin', 'UserController@postLogin');
 Route::post('postRegister', 'UserController@postRegister');
 
 Route::group(['middleware' => 'auth:api'], function(){
-    Route::get('getUser','UserController@getUser');
+
+    Route::get('getUser', 'UserController@getUser');
+    Route::get('getUserById/{id}', 'UserController@getUserById');
 
     Route::group(['middleware' => 'isEditor'],function(){
         Route::put('editUser/{id}', 'UserController@editUser');
     });
+
     Route::group(['middleware' => 'isAdmin'],function(){
         Route::delete('deleteUser/{id}','UserController@deleteUser');
     });
