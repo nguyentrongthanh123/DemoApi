@@ -27,7 +27,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('get-user', 'UserController@getUser');
     Route::get('get-user-by-id/{id}', 'UserController@getUserById');
 
-    Route::group(['middleware' => 'scopes:editorSuccess,adminSuccess'],function(){
+    Route::group(['middleware' => 'scope:editorSuccess,adminSuccess'],function(){
         Route::put('edit-user/{id}', 'UserController@editUser');
     });
 

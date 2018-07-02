@@ -27,7 +27,7 @@ class PostLoginTest extends TestCase
             ]);
     }
 
-    public function testRequired()
+    public function testRequiredLogin()
     {
         $response = $this->json('POST', '/api/post-login', [
             'email'       => '',

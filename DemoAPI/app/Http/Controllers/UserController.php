@@ -117,7 +117,7 @@ class UserController extends Controller
 
     public function deleteUser($id)
     {
-        $findUser = $this->user->find($id);
+        $findUser = User::find($id);
         if($findUser)
         {
             $this->user->delete($id);
@@ -129,12 +129,13 @@ class UserController extends Controller
 
     public function getUserById($id)
     {
-        $findUser = $this->user->find($id);
+        $findUser = User::find($id);
         if($findUser)
         {
             return $this->prepareResult(true,$findUser, [],"Show success");
         }
         else
+            // echo "a";
             return $this->prepareResult(false, [] , "Unable to find user","User not found");
     }
 

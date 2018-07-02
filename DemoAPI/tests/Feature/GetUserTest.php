@@ -27,7 +27,7 @@ class GetUserTest extends TestCase
             ]);
     }
 
-    public function testNoneToken()
+    public function testNoneTokenGetUser()
     {
         $token = "";
         $headers = ['Authorization' => "Bearer $token"];

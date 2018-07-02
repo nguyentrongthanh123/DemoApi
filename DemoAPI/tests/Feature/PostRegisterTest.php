@@ -15,34 +15,34 @@ class PostRegisterTest extends TestCase
      */
     public function testRegister()
     {
-        // $response = $this->json('POST', '/api/post-register', [
-        //     'name'        => 'thanhtest',
-        //     'email'       => 'thanhres4@gmail.com',
-        //     'password'    => '123456',
-        //     're_password' => '123456'
-        // ]);
-        // $response
-        //     ->assertStatus(200)
-        //     ->assertJson([
-        //         'status' => 201,
-        //         'message' => "All results fetched",
+        $response = $this->json('POST', '/api/post-register', [
+            'name'        => 'thanhtest',
+            'email'       => 'thanhtest8@gmail.com',
+            'password'    => '123456',
+            're_password' => '123456'
+        ]);
+        $response
+            ->assertStatus(200)
+            ->assertJson([
+                'status' => 201,
+                'message' => "All results fetched",
                 
-        //         ])->assertJsonStructure([
-        //             'data' =>[
-        //                 'id',
-        //                 'name',
-        //                 'email',
-        //                 'created_at',
-        //                 'updated_at',
-        //             ]
-        //         ]);
+                ])->assertJsonStructure([
+                    'data' =>[
+                        'id',
+                        'name',
+                        'email',
+                        'created_at',
+                        'updated_at',
+                    ]
+                ]);
 
-        $response = $this->get('/');
+        // $response = $this->get('/');
 
-        $response->assertStatus(200);
+        // $response->assertStatus(200);
     }
 
-    public function testRequired()
+    public function testRequiredRegister()
     {
         $response = $this->json('POST', '/api/post-register', [
             'name'        => '',
