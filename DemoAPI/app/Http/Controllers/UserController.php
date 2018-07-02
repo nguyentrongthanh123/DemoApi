@@ -7,30 +7,27 @@ use Auth;
 use Validator;
 use DB;
 use App\User;
-use App\Repositories\Repository;
+use App\Repositories\IUserRepository;
 
-// use Carbon\Carbon;
 class UserController extends Controller
 {
 
-    protected $muser;
-    public function __construct(User $user)
+    protected $user;
+    // set the model
+    public function __construct(IUserRepository $user)
     {
-        // set the model
-        $this->muser = new Repository($user);
+        $this->user = $user;
     }
 
-    function prepareResult($status, $data, $errors,$msg)
+    public function prepareResult($status, $data, $errors,$msg)
     {
         return ['status' => $status,'data'=> $data,'message' => $msg,'errors' => $errors];
-    }// end prepareResult
+    }
 
-    function validations($req, $type)
+    public function validations($req, $type)
     {
-        $errors = [ ];
- 
+        $errors = [];
         $error = false;
-    
         if($type == "login"){
     
             $validator = Validator::make($req->all(),[
@@ -41,8 +38,8 @@ class UserController extends Controller
             if($validator->fails()){
                 $error = true;
                 $errors = $validator->errors();
-            }// end if $validator
-        }// end if $type
+            }
+        }
         else if($type == "register")
         {
             $validator = Validator::make($req->all(), [
@@ -54,20 +51,18 @@ class UserController extends Controller
             if($validator->fails()){
                 $error = true;
                 $errors = $validator->errors();
-            }// end if $validator
-        }// end else if $type
+            }
+        }
         return ["error" => $error,"errors"=>$errors];
-    }// end validations
+    }
 
-    function postLogin(Request $req)
+    public function postLogin(Request $req)
     {
         $validate = $this->validations($req,"login");
         if($validate["error"])
         {
             return $this->prepareResult(false, [], $validate['errors'],"Error while validating user");
         }
-
-        // } // end if check $validator
         Auth::attempt([
             'email'    => $req->email,
             'password' => $req->password
@@ -76,67 +71,71 @@ class UserController extends Controller
         if(Auth::check())
         {
             return $this->prepareResult(true,  $user, [],"User Verified");
-        } // end if Auth:check
+        }
         else
         {
             return $this->prepareResult(false, [] , ["password" => "Wrong password"],"Wrong password");
-        } // end else
-    } // end postLogin
+        }
+    }
 
-    function postRegister(Request $req)
+    public function postRegister(Request $req)
     {
-        
         $validate = $this->validations($req,"register");
         if ($validate["error"]) { 
             return $this->prepareResult(false, [], $validate['errors'],"Error while validating user");          
-        }// end if check $validator
- 
+        }
         $input = $req->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
-        return $this->prepareResult(201,$user, [],"All results fetched");
+        return $this->prepareResult(true,$user, [],"All results fetched");
+    }
 
-    } // end postRegister
-
-    function getUser()
+    public function getLogout()
+    {
+        Auth::logout();
+        return $this->prepareResult(true,[], [],"Page login");
+    }
+    
+    public function getUser()
     {
         $users = User::get();
         return $this->prepareResult(true,$users, [],"Show success");
-    } // end getUser
+    }
 
-    function editUser(Request $req, $id)
+    public function editUser(Request $req, $id)
     {
         $findUser = User::find($id);
         if($findUser)
         {
             $findUser->name = $req->input('name');
-            $this->muser->update($req->only($this->muser->getModel()->fillable), $id);
+            $this->user->update($req->only($this->user->getCriteria()), $id);
             return $this->prepareResult(true,$findUser,[],"Edit success");
-        }// end if
-        else
-            return $this->prepareResult(false, [] , "Unable to find user","User not found");
-    } // end editUser
-
-    function deleteUser($id)
-    {
-        $findUser = $this->muser->findById($id);
-        if($findUser)
-        {
-            $this->muser->delete($id);
-            return $this->prepareResult(true,[],[],"Delete User Successful");
-        }// end if
+        }
         else
             return $this->prepareResult(false, [] , "Unable to find user","User not found");
     }
 
-    function getUserById($id)
+    public function deleteUser($id)
     {
-        $findUser = $this->muser->findById($id);
+        $findUser = $this->user->find($id);
+        if($findUser)
+        {
+            $this->user->delete($id);
+            return $this->prepareResult(true,[],[],"Delete User Successful");
+        }
+        else
+            return $this->prepareResult(false, [] , "Unable to find user","User not found");
+    }
+
+    public function getUserById($id)
+    {
+        $findUser = $this->user->find($id);
         if($findUser)
         {
             return $this->prepareResult(true,$findUser, [],"Show success");
         }
         else
             return $this->prepareResult(false, [] , "Unable to find user","User not found");
-    }// end getUserById
+    }
+
 }

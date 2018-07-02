@@ -30,6 +30,12 @@ class AuthServiceProvider extends ServiceProvider
         Passport::tokensExpireIn(now()->addDays(15));
 
         Passport::refreshTokensExpireIn(now()->addDays(30));
+
+        Passport::tokensCan([
+            'adminSuccess' => 'you are admin',
+            'editorSuccess' => 'you are user',
+        ]);
+    
         //
     }
 }

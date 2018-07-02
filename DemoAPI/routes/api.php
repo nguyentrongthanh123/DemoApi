@@ -17,19 +17,21 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('postLogin', 'UserController@postLogin');
-Route::post('postRegister', 'UserController@postRegister');
+
+Route::post('post-login', 'UserController@postLogin');
+Route::post('post-register', 'UserController@postRegister');
+Route::get('get-logout','UserController@getLogout');
 
 Route::group(['middleware' => 'auth:api'], function(){
 
-    Route::get('getUser', 'UserController@getUser');
-    Route::get('getUserById/{id}', 'UserController@getUserById');
+    Route::get('get-user', 'UserController@getUser');
+    Route::get('get-user-by-id/{id}', 'UserController@getUserById');
 
-    Route::group(['middleware' => 'isEditor'],function(){
-        Route::put('editUser/{id}', 'UserController@editUser');
+    Route::group(['middleware' => 'scopes:editorSuccess,adminSuccess'],function(){
+        Route::put('edit-user/{id}', 'UserController@editUser');
     });
 
-    Route::group(['middleware' => 'isAdmin'],function(){
-        Route::delete('deleteUser/{id}','UserController@deleteUser');
+    Route::group(['middleware' =>'scope:adminSuccess'],function(){
+        Route::delete('delete-user/{id}','UserController@deleteUser');
     });
 });
